@@ -14,8 +14,11 @@ function mfa () {
    if [[ -z "${MFA_DEVICE_NAME}" ]]; then
      echo "USAGE: mfa MFA_DEVICE_NAME";
    else
-     echo -n "$(date '+%H:%M:%S') "
-     oathtool --base32 --totp $(security find-generic-password -ga "${MFA_DEVICE_NAME}" 2>&1 >/dev/null | cut -d'"' -f2)
+     GETPASS=$(security find-generic-password -ga "${MFA_DEVICE_NAME}" -w)
+     GETCODE=$(oathtool --base32 --totp "${GETPASS}")
+     echo "${GETCODE}"|pbcopy
+     echo "$(date '+%H:%M:%S')" "${GETCODE}"
+     echo "Your new code was copied to the clipboard"
    fi
 }
 
@@ -60,9 +63,11 @@ Secret added to keychain
 ```
 $ mfa aws
 19:49:58 822269
+Your new code was copied to the clipboard
 # wait until the next minute for a new code
 $ mfa aws
 19:50:00 017036
+Your new code was copied to the clipboard
 ```
 3) Delete a virtual device
 ```
