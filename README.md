@@ -15,7 +15,8 @@ function mfa () {
      echo "USAGE: mfa MFA_DEVICE_NAME";
    else
      echo -n "$(date '+%H:%M:%S') "
-     oathtool --base32 --totp $(security find-generic-password -ga "${MFA_DEVICE_NAME}" 2>&1 >/dev/null | cut -d'"' -f2)
+     MFA_SECRET_KEY=$(security find-generic-password -ga "${MFA_DEVICE_NAME}" 2>&1 >/dev/null)
+     oathtool --base32 --totp $(echo $MFA_SECRET_KEY | cut -f2 -d'"')
    fi
 }
 
